@@ -7,14 +7,14 @@ import (
 
 // NFT represents a token which may be claimed or unclaimed
 type NFT struct {
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	ID            string
-	Hash          string
-	Address       string
-	Asset         string
-	OriginalOwner string
-	CurrentOwner  string
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	ID            string    `json:"id"`
+	Hash          string    `json:"hash"`
+	Address       string    `json:"address"`
+	Asset         string    `json:"asset"`
+	OriginalOwner string    `json:"original_owner"`
+	CurrentOwner  string    `json:"current_owner"`
 }
 
 // NFTService represents the data layer to manage NFTs

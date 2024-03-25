@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/go-chi/chi/v5"
 )
 
 const version = "1.0.0"
@@ -37,26 +35,30 @@ func main() {
 		config: config,
 	}
 
-	mux := chi.NewRouter()
-	mux.Get("/v1/healthz", api.healthzHandler)
-
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", config.port),
-		Handler:      mux,
+		Handler:      api.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
+		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelDebug),
 	}
 
 	logger.Info("starting server", "address", server.Addr, "environment", config.env)
-
 	err := server.ListenAndServe()
 	logger.Error(err.Error())
 	os.Exit(1)
 }
 
 func (svc *service) healthzHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "status: available")
-	fmt.Fprintf(w, "environment: %s\n", svc.config.env)
-	fmt.Fprintf(w, "version: %s\n", version)
+	payload := capsule{
+		"status":      "available",
+		"environment": svc.config.env,
+		"version":     version,
+	}
+
+	err := SendJSON(w, http.StatusOK, nil, payload)
+	if err != nil {
+		svc.SendServerError(w, r, err)
+	}
 }
