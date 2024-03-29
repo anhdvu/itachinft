@@ -59,6 +59,6 @@ func (svc *service) healthzHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := SendJSON(w, http.StatusOK, nil, payload)
 	if err != nil {
-		svc.SendServerError(w, r, err)
+		svc.Send500Error(w, r, err)
 	}
 }

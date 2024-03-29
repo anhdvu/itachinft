@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -11,8 +10,24 @@ import (
 )
 
 func (svc *service) CreateNFTHandler() http.HandlerFunc {
+	type input struct {
+		Hash    string `json:"hash"`
+		Address string `json:"address"`
+		Asset   string `json:"asset"`
+		Owner   string `json:"owner"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "create a new NFT")
+		var in input
+		err := ReadJSON(r, &in)
+		if err != nil {
+			svc.Send400Error(w, r, err)
+			return
+		}
+
+		err = SendJSON(w, http.StatusOK, nil, capsule{"user_input": in})
+		if err != nil {
+			svc.Send500Error(w, r, err)
+		}
 	}
 }
 
@@ -38,7 +53,7 @@ func (svc *service) ShowNFTHandler() http.HandlerFunc {
 
 		err = SendJSON(w, http.StatusOK, nil, capsule{"nft": nft})
 		if err != nil {
-			svc.SendServerError(w, r, err)
+			svc.Send500Error(w, r, err)
 		}
 	}
 }

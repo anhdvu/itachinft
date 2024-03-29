@@ -19,9 +19,13 @@ func (svc *service) SendError(w http.ResponseWriter, r *http.Request, status int
 }
 
 // SendServerError method logs an error and sends HTTP status code 500 to clients.
-func (svc *service) SendServerError(w http.ResponseWriter, r *http.Request, err error) {
+func (svc *service) Send500Error(w http.ResponseWriter, r *http.Request, err error) {
 	svc.logError(r, err)
 
 	message := "the server encountered some technical problem"
 	svc.SendError(w, r, http.StatusInternalServerError, message)
+}
+
+func (svc *service) Send400Error(w http.ResponseWriter, r *http.Request, err error) {
+	svc.SendError(w, r, http.StatusBadRequest, err.Error())
 }

@@ -13,7 +13,7 @@ func (svc *service) RecoverPanic(next http.Handler) http.Handler {
 		defer func() {
 			if err := recover(); err != nil {
 				w.Header().Set("Connection", "close")
-				svc.SendServerError(w, r, fmt.Errorf("%s", err))
+				svc.Send500Error(w, r, fmt.Errorf("%s", err))
 			}
 		}()
 
