@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gestaltintel/itachinft/internal/validator"
 	"github.com/gestaltintel/itachinft/itachi"
 	"github.com/go-chi/chi/v5"
 )
@@ -21,6 +22,17 @@ func (svc *service) CreateNFTHandler() http.HandlerFunc {
 		err := ReadJSON(r, &in)
 		if err != nil {
 			svc.Send400Error(w, r, err)
+			return
+		}
+
+		v := validator.New()
+		v.Check(in.Hash != "", "hash", "must be provided")
+		v.Check(len(in.Address) != 42, "address", "must be 42 character long")
+		v.Check(in.Asset != "", "asset", "must be provided")
+		v.Check(in.Owner != "", "owner", "must be provided")
+
+		if !v.Valid() {
+			svc.Send422Error(w, r, v.Errors)
 			return
 		}
 

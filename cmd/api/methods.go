@@ -27,5 +27,9 @@ func (svc *service) Send500Error(w http.ResponseWriter, r *http.Request, err err
 }
 
 func (svc *service) Send400Error(w http.ResponseWriter, r *http.Request, err error) {
-	svc.SendError(w, r, http.StatusBadRequest, err.Error())
+	svc.SendError(w, r, http.StatusBadRequest, err)
+}
+
+func (svc *service) Send422Error(w http.ResponseWriter, r *http.Request, errs map[string]any) {
+	svc.SendError(w, r, http.StatusUnprocessableEntity, errs)
 }
